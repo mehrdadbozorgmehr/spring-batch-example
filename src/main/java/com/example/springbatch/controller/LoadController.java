@@ -1,6 +1,7 @@
 package com.example.springbatch.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/load")
 @RequiredArgsConstructor
+@Slf4j
 public class LoadController {
 
     private final JobLauncher jobLauncher;
@@ -31,10 +33,9 @@ public class LoadController {
         maps.put("time", new JobParameter<>(System.currentTimeMillis(), Long.class));
         JobParameters parameters = new JobParameters(maps);
         JobExecution jobExecution = jobLauncher.run(job, parameters);
+        log.info("JobExecution: {}", jobExecution.getStatus());
 
-        System.out.println("JobExecution: " + jobExecution.getStatus());
-
-        System.out.println("Batch is Running...");
+        log.info("Batch is Running...");
         while (jobExecution.isRunning()) {
             System.out.println("...");
         }

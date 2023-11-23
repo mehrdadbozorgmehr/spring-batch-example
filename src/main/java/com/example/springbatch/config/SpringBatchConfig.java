@@ -18,7 +18,11 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -44,6 +48,7 @@ public class SpringBatchConfig {
         return new StepBuilder("ETL-file-load", jobRepository)
                 .<User, User>chunk(100, transactionManager)
                 .reader(itemReader())
+                .taskExecutor(taskExecutor())
                 .processor(itemProcessor)
                 .writer(itemWriter)
                 .build();
@@ -79,5 +84,14 @@ public class SpringBatchConfig {
         return defaultLineMapper;
     }
 
+    @Bean
+    public TaskExecutor taskExecutor() {
+        var executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(10);
+        executor.setThreadNamePrefix("Thread N -> :");
+        return executor;
+    }
 
 }
