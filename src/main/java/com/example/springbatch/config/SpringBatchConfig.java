@@ -87,9 +87,10 @@ public class SpringBatchConfig {
     @Bean
     public TaskExecutor taskExecutor() {
         var executor = new ThreadPoolTaskExecutor();
+        // Adjust based on your requirements and available resources
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(10);
+        executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("Thread N -> :");
         return executor;
     }
